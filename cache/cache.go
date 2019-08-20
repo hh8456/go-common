@@ -16,14 +16,14 @@ type Cache struct {
 }
 
 type cache struct {
-	items map[int64]item
+	items map[string]item
 	lock  sync.RWMutex
 	stop  chan bool
 }
 
 func New() *Cache {
 	c := &cache{
-		items: make(map[int64]item),
+		items: make(map[string]item),
 		stop:  make(chan bool),
 	}
 
@@ -39,7 +39,7 @@ func stopCheckExpired(c *Cache) {
 	c.stop <- true
 }
 
-func (c *cache) Set(k int64, x interface{}, d time.Duration) {
+func (c *cache) Set(k string, x interface{}, d time.Duration) {
 	var e int64
 	if d > 0 {
 		e = time.Now().Add(d).UnixNano()
@@ -53,7 +53,7 @@ func (c *cache) Set(k int64, x interface{}, d time.Duration) {
 	c.lock.Unlock()
 }
 
-func (c *cache) Get(k int64) (interface{}, bool) {
+func (c *cache) Get(k string) (interface{}, bool) {
 	c.lock.RLock()
 	item, found := c.items[k]
 	if !found {
@@ -72,7 +72,7 @@ func (c *cache) Get(k int64) (interface{}, bool) {
 	return item.obj, true
 }
 
-func (c *cache) Delete(k int64) {
+func (c *cache) Delete(k string) {
 	c.lock.Lock()
 	delete(c.items, k)
 	c.lock.Unlock()
@@ -80,7 +80,7 @@ func (c *cache) Delete(k int64) {
 
 func (c *cache) Flush() {
 	c.lock.Lock()
-	c.items = map[int64]item{}
+	c.items = map[string]item{}
 	c.lock.Unlock()
 }
 
