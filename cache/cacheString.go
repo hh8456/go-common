@@ -96,7 +96,6 @@ func (c *cacheStr) deleteExpired() {
 }
 
 func checkExpired(c *cacheStr) {
-	defer println("checkExpired over")
 	ticker := time.NewTicker(time.Second)
 	for {
 		select {

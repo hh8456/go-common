@@ -96,7 +96,6 @@ func (c *cacheInt64) deleteExpired() {
 }
 
 func checkExpiredInt64(c *cacheInt64) {
-	defer println("checkExpired over")
 	ticker := time.NewTicker(time.Second)
 	for {
 		select {
