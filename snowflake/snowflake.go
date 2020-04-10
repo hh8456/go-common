@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	lastTimeStamp = time.Now().UnixNano() >> 20 // 除以 1000000, 纳秒转为毫秒
+	lastTimeStamp = time.Now().UnixNano() / 1e6 // 除以 1000000, 纳秒转为毫秒
 	machineID = 666 << 12                       // 单纯给个吉祥数字 666
 	timeMask = ^(int64(-1) << 41)
 }
@@ -40,7 +40,7 @@ func getTimeFromID(id int64) int64 {
 }
 
 func getCurrentTimestamp() int64 {
-	curTimeStamp := time.Now().UnixNano() >> 20 // 除以 1000000, 纳秒转为毫秒
+	curTimeStamp := time.Now().UnixNano() / 1e6 // 除以 1000000, 纳秒转为毫秒
 	return curTimeStamp & timeMask              // 获得时间戳的低 41 位
 }
 
@@ -50,7 +50,7 @@ func GetSnowflakeId() int64 {
 
 	lock.Lock()
 
-	curTimeStamp := time.Now().UnixNano() >> 20 // 除以 1000000, 纳秒转为毫秒
+	curTimeStamp := time.Now().UnixNano() / 1e6 // 除以 1000000, 纳秒转为毫秒
 
 	// 同一毫秒
 	if curTimeStamp == lastTimeStamp {
@@ -58,10 +58,10 @@ func GetSnowflakeId() int64 {
 		// 序列号占 12 位,十进制范围是 [ 0, 4095 ]
 		if sn > 4095 {
 			time.Sleep(time.Millisecond)
-			curTimeStamp = time.Now().UnixNano() >> 20 // 除以 1000000, 纳秒转为毫秒
+			curTimeStamp = time.Now().UnixNano() / 1e6 // 除以 1000000, 纳秒转为毫秒
 			if lastTimeStamp == curTimeStamp {
 				time.Sleep(time.Millisecond)
-				curTimeStamp = time.Now().UnixNano() >> 20 // 除以 1000000, 纳秒转为毫秒
+				curTimeStamp = time.Now().UnixNano() / 1e6 // 除以 1000000, 纳秒转为毫秒
 			}
 			lastTimeStamp = curTimeStamp
 			sn = 0
